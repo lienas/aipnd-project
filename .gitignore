@@ -102,3 +102,9 @@ project_venv/
 .mypy_cache/
 
 .github/**
+
+# data
+.DS_Store
+flower_data/
+
+
