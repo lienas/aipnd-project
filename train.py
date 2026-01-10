@@ -1,17 +1,25 @@
-"""Trainieren Sie ein neues Netzwerk auf einem Datensatz mit train.py.
-
-Grundlegende Verwendung: python train.py data_directory
-Gibt den Trainingsverlust, den Validierungsverlust und
-die Validierungsgenauigkeit aus, während das Netzwerk trainiert.
-
-Optionen:
-    * Verzeichnis zum Speichern von Checkpoints festlegen:
-      python train.py data_dir --save_dir save_directory
-    * Architektur wählen: python train.py data_dir --arch "vgg13"
-    * Hyperparameter festlegen:
-      python train.py data_dir --learning_rate 0.01 --hidden_units 512 --epochs 20
-    * GPU für das Training verwenden: python train.py data_dir --gpu
-"""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# */AIPND-project/train.py
+#
+# PROGRAMMER: Thomas L.
+# DATE CREATED: 01/2026
+# REVISED DATE:
+# PURPOSE: Train a new neural network on a dataset and save the model as a
+#          checkpoint. Supports multiple architectures (VGG, AlexNet, ResNet)
+#          and allows customization of hyperparameters.
+#
+# Basic usage: python train.py data_directory
+# Prints training loss, validation loss, and validation accuracy during training.
+#
+# Options:
+#     * Set directory to save checkpoints:
+#       python train.py data_dir --save_dir save_directory
+#     * Choose architecture: python train.py data_dir --arch "vgg13"
+#     * Set hyperparameters:
+#       python train.py data_dir --learning_rate 0.01 --hidden_units 512 --epochs 20
+#     * Use GPU for training: python train.py data_dir --gpu
+##
 
 import argparse
 import json
@@ -175,16 +183,7 @@ def train():
     # train the network
 
     # Determine device: GPU only if requested and available
-    if args.gpu:
-        if torch.backends.mps.is_available():
-            device = torch.device("mps")
-        elif torch.cuda.is_available():
-            device = torch.device("cuda")
-        else:
-            print("Warning: --gpu flag set but no GPU available. Using CPU.")
-            device = torch.device("cpu")
-    else:
-        device = torch.device("cpu")
+    device = helper.get_device(args.gpu)
 
     print(f"Using device: {device}")
     model.to(device)
@@ -251,8 +250,9 @@ def train():
     # Save the model
     # Speichern
     checkpoint = {
-        'arch': args.arch,  # Modellarchitektur
-        'classifier': classifier_attr,
+        'arch': args.arch,
+        'classifier_attr': classifier_attr,
+        'classifier': getattr(model, classifier_attr),
         'state_dict': model.state_dict(),
         'class_to_idx': image_datasets['train'].class_to_idx,
         'optimizer_state': optimizer.state_dict(),
