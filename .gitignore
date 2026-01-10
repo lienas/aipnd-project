@@ -109,3 +109,4 @@ flower_data/
 
 
 checkpoints/
+*.pth
